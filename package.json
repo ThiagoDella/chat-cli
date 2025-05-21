@@ -1,6 +1,6 @@
 {
   "name": "chat-cli",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
@@ -10,8 +10,9 @@
     "type-check": "tsc --noEmit"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Thiago D.L. Moreira",
+  "email": "rte3ykkm3@mozmail.com",
+  "license": "AGPL-3.0-only",
   "description": "",
   "devDependencies": {
     "@eslint/js": "^9.27.0",
