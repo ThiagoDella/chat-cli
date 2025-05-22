@@ -3,7 +3,7 @@ import { Screen } from "../screen";
 import { BoxUI } from "./box";
 import { Widgets } from "blessed";
 
-type Command = 'join' | 'msg' | 'clear-chat' | 'help';
+type Command = 'join' | 'msg' | 'clear-chat' | 'help' | 'username:changed';
 
 export class CommandLogBox {
   private screen;
@@ -13,11 +13,12 @@ export class CommandLogBox {
 
   private commandLog: string[] = [];
 
-  private possibleCommands: Record<Command, (arg: string) => string> = {
-    'join': (roomId: string) => `User joined room: ${roomId}`,
+  private possibleCommands: Record<Command, (arg: any) => string> = {
+    'join': (roomId: string) => `User joined room: "${roomId}"`,
     'msg': (_: string) => '',
     'clear-chat': (_: string) => 'Clearing all chat messages',
     'help': (_: string) => 'help',
+    'username:changed': ({ oldUsername, username }: { oldUsername: string, username: string }) => `Changing username from ${oldUsername} to ${username}`,
   };
 
   constructor(screen: Screen, boxCreator: BoxUI, events: EventEmitter) {
@@ -47,10 +48,11 @@ export class CommandLogBox {
 
   private registerForEvents() {
     this.events.on('command', ({ cmd, args }: { cmd: string; args: string[] }) => {
+      if (cmd === 'msg' || cmd === 'username') return;
       if (cmd in this.possibleCommands) {
-        if (cmd === 'msg') return;
         const typedCmd = cmd as Command;
-        const msg = this.possibleCommands[typedCmd](args[0] || '');
+        const _args = Array.isArray(args) ? args[0] : args
+        const msg = this.possibleCommands[typedCmd](_args || '');
         if (msg) {
           this.commandLog.push(msg);
           this.ui?.pushLine(msg);

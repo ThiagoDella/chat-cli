@@ -3,6 +3,7 @@ import { CommandBar } from './domain/components/commandBar';
 import { CommandHelpTextUI } from './domain/components/commandHelpText';
 import { CommandLogBox } from './domain/components/commandLog';
 import { Screen } from './domain/screen';
+import { User } from './domain/user/user';
 import { SocketConenction } from './infrastructure/socket';
 
 
@@ -64,6 +65,7 @@ screen.buildScreen(components)
 
 // ───── Init ─────
 screen.render();
-const socket = new SocketConenction(commandBar.events);
+const user = new User(commandBar.events);
+const socket = new SocketConenction(commandBar.events, user);
 socket.initSocket(chatBox);
 

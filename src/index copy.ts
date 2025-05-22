@@ -178,6 +178,13 @@ commandBar.on('submit', (value) => {
         sendMessage(message);
       }
       break;
+    case 'username':
+      if (args.length === 0 || !args[0].trim()) {
+        commandLogBox.setContent('Error: Impossible to change name.');
+      } else {
+        joinRoom(args[0]);
+      }
+      break;
     case 'clear':
       commandLogBox.setContent('');
       break;

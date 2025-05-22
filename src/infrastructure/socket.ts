@@ -1,57 +1,25 @@
 import { Widgets } from 'blessed';
 import EventEmitter from 'events';
 import { io } from 'socket.io-client';
+import { User } from '../domain/user/user';
 
-// const socket = io('http://localhost:3000');
-
-// let CURRENT_ROOM = '';
-
-// export const sendMessage = (message: string) => {
-//   if (CURRENT_ROOM) {
-//     socket.emit('sendMessage', { roomId: CURRENT_ROOM, message: message.trim() });
-//   }
-// }
-
-// export const joinRoom = (roomId: string) => {
-//   const room = roomId.trim();
-//   if (room) {
-//     CURRENT_ROOM = roomId;
-//     socket.emit('joinRoom', { roomId: room, username: 'Thiago' });
-//   }
-// }
-
-// export const initSocket = (logBox) => {
-//   // Listen for server response
-//   socket.on('newMessage', (payload) => {
-//     appendLog(`${payload.sender}: ${payload.message}`);
-//   });
-
-//   socket.on('userJoined', (payload) => {
-//     appendLog(`${payload.username}: joined the room ${payload.roomId}.`);
-//   });
-
-//   // Helper to append text to log box
-//   function appendLog(message: string) {
-//     logBox.setContent(logBox.getContent() + message + '\n');
-//     logBox.setScrollPerc(100);
-//   }
-
-// }
-
-type Command = 'join' | 'msg';
+type Command = 'join' | 'msg' | 'username:changed';
 
 
 export class SocketConenction {
   private socket = io('http://localhost:3000');
   private CURRENT_ROOM = '';
   private events: EventEmitter;
+  private user: User;
   private possibleUserCommands: Record<Command, (arg: string[]) => void> = {
     'join': (roomId) => this.joinRoom(roomId),
     'msg': (msg) => this.sendMessage(msg),
+    'username:changed': (username) => this.changeUsername(username),
   };
 
-  constructor(events: EventEmitter) {
+  constructor(events: EventEmitter, user: User) {
     this.events = events;
+    this.user = user;
     this.registerForEvents();
   }
 
@@ -67,7 +35,7 @@ export class SocketConenction {
     const room = roomId[0].trim();
     if (room) {
       this.CURRENT_ROOM = room;
-      this.socket.emit('joinRoom', { roomId: room, username: 'Thiago' });
+      this.socket.emit('joinRoom', { roomId: room, username: this.user.username });
     }
   }
 
@@ -77,6 +45,11 @@ export class SocketConenction {
     }
   }
 
+  changeUsername({ username }: { oldUsername: string, username: string }) {
+    if (this.CURRENT_ROOM) {
+      this.socket.emit('changeUsername', { roomId: this.CURRENT_ROOM, username });
+    }
+  }
 
   initSocket(chatBox: Widgets.BoxElement) {
 
@@ -85,7 +58,7 @@ export class SocketConenction {
     });
 
     this.socket.on('userJoined', (payload) => {
-      appendLog(`${payload.username}: joined the room ${payload.roomId}.`);
+      appendLog(`${payload.username}: joined the room "${payload.roomId}".`);
     });
 
     // Helper to append text to log box
