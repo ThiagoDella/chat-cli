@@ -7,7 +7,7 @@ type Command = 'join' | 'msg' | 'username:changed';
 
 
 export class SocketConenction {
-  private socket = io('http://localhost:3000');
+  private _socket = io('http://localhost:3000');
   private CURRENT_ROOM = '';
   private events: EventEmitter;
   private user: User;
@@ -16,6 +16,10 @@ export class SocketConenction {
     'msg': (msg) => this.sendMessage(msg),
     'username:changed': (username) => this.changeUsername(username),
   };
+
+  get socket() {
+    return this._socket;
+  }
 
   constructor(events: EventEmitter, user: User) {
     this.events = events;
@@ -35,29 +39,29 @@ export class SocketConenction {
     const room = roomId[0].trim();
     if (room) {
       this.CURRENT_ROOM = room;
-      this.socket.emit('joinRoom', { roomId: room, username: this.user.username });
+      this._socket.emit('joinRoom', { roomId: room, username: this.user.username });
     }
   }
 
   sendMessage(message: string[]) {
     if (this.CURRENT_ROOM) {
-      this.socket.emit('sendMessage', { roomId: this.CURRENT_ROOM, message: message.join(' ').trim() });
+      this._socket.emit('sendMessage', { roomId: this.CURRENT_ROOM, message: message.join(' ').trim() });
     }
   }
 
   changeUsername({ username }: { oldUsername: string, username: string }) {
     if (this.CURRENT_ROOM) {
-      this.socket.emit('changeUsername', { roomId: this.CURRENT_ROOM, username });
+      this._socket.emit('changeUsername', { roomId: this.CURRENT_ROOM, username });
     }
   }
 
   initSocket(chatBox: Widgets.BoxElement) {
 
-    this.socket.on('newMessage', (payload) => {
+    this._socket.on('newMessage', (payload) => {
       appendLog(`${payload.sender}: ${payload.message}`);
     });
 
-    this.socket.on('userJoined', (payload) => {
+    this._socket.on('userJoined', (payload) => {
       appendLog(`${payload.username}: joined the room "${payload.roomId}".`);
     });
 

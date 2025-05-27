@@ -20,6 +20,21 @@ export class CommandHelpTextUI {
       .join('\n');
   }
 
+  private splitCommandsForColumns(cmds: string[][]): string[][] {
+    const half = Math.ceil(cmds.length / 2);
+    const left = cmds.slice(0, half);
+    const right = cmds.slice(half);
+    const maxRows = Math.max(left.length, right.length);
+
+    const rows: string[][] = [];
+    for (let i = 0; i < maxRows; i++) {
+      const leftRow = left[i] || ['', ''];
+      const rightRow = right[i] || ['', ''];
+      rows.push([...leftRow, ...rightRow]); // flatten into 4 cols
+    }
+    return rows;
+  }
+
   build(commands: Array<string[]>) {
     const ui = this.boxCreator.createBox({
       bottom: 1,
@@ -34,7 +49,8 @@ export class CommandHelpTextUI {
       vi: true,
     });
 
-    const commandsText = this.formatCommands(commands, [12, 30]);
+    const cmds4cols = this.splitCommandsForColumns(commands);
+    const commandsText = this.formatCommands(cmds4cols, [10, 25, 10, 25]);
     ui.setContent(commandsText);
     return ui;
   }
