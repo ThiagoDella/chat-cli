@@ -8,11 +8,10 @@ type RoomMap = Map<string, { [socketId: string]: string }>;
 export class RoomsPanel {
   private ui: Widgets.BoxElement | undefined;
   private rooms: RoomMap = new Map();
-
+  private currentRoom = null;
 
   constructor(private io: SocketConenction, private boxCreator: BoxUI, private screen: Screen) {
     this.registerToServerEvents();
-
   }
 
   registerToServerEvents() {
@@ -25,6 +24,7 @@ export class RoomsPanel {
 
     this.io.socket.on('joinedRoom', (payload) => {
       this.rooms.set(payload.roomId, payload.users);
+      this.currentRoom = payload.roomId;
       this.updateRoomUI();
     });
   }
@@ -41,9 +41,9 @@ export class RoomsPanel {
       alwaysScroll: true,
       keys: true,
       input: true,
-      hoverText: 'Click me',
       vi: true,
       mouse: true,
+      tags: true,
       scrollbar: {
         ch: '│',
         track: {
@@ -83,7 +83,11 @@ export class RoomsPanel {
     );
 
     const lines = [...sortedRooms.entries()].map(([roomId, users]) => {
-      return `${roomId} — ${Object.keys(users).length} user(s)`
+      const line = `${roomId} — ${Object.keys(users).length} user(s)`;
+      if (roomId === this.currentRoom) {
+        return `{white-bg}{black-fg}${line}{/black-fg}{/white-bg}`; // highlighted
+      }
+      return line
     }).join('\n');
     this.ui.setContent(lines);
     this.ui.screen?.render();
