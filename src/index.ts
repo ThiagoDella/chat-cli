@@ -5,7 +5,7 @@ import { CommandLogBox } from './domain/components/commandLog';
 import { RoomsPanel } from './domain/components/roomsPanel';
 import { Screen } from './domain/screen';
 import { User } from './domain/user/user';
-import { SocketConenction } from './infrastructure/socket';
+import { SocketConnection } from './infrastructure/socket';
 
 
 // ───── Create Screen ─────
@@ -53,7 +53,7 @@ const commandLogBox = new CommandLogBox(screen, boxUi, commandBar.events);
 
 // ───── Init ─────
 const user = new User(commandBar.events);
-const socket = new SocketConenction(commandBar.events, user);
+const socket = new SocketConnection(commandBar.events, user);
 
 const roomsBox = new RoomsPanel(socket, boxUi, screen);
 

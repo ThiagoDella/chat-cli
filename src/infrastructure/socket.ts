@@ -6,7 +6,7 @@ import { User } from '../domain/user/user';
 type Command = 'join' | 'msg' | 'username:changed';
 
 
-export class SocketConenction {
+export class SocketConnection {
   private _socket = io('http://localhost:3000');
   private CURRENT_ROOM = '';
   private events: EventEmitter;
@@ -61,8 +61,8 @@ export class SocketConenction {
       appendLog(`${payload.sender}: ${payload.message}`);
     });
 
-    this._socket.on('userJoined', (payload) => {
-      appendLog(`${payload.username}: joined the room "${payload.roomId}".`);
+    this._socket.on('joinedRoom', (payload) => {
+      appendLog(`chat-cli: ${payload.username} joined the room "${payload.roomId}".`);
     });
 
     // Helper to append text to log box
