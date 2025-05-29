@@ -1,6 +1,6 @@
 import { Widgets } from "blessed";
 import { BoxUI } from "./box";
-import { SocketConenction } from "../../infrastructure/socket";
+import { SocketConnection } from "../../infrastructure/socket";
 import { Screen } from "../screen";
 
 type RoomMap = Map<string, { [socketId: string]: string }>;
@@ -10,7 +10,7 @@ export class RoomsPanel {
   private rooms: RoomMap = new Map();
   private currentRoom = null;
 
-  constructor(private io: SocketConenction, private boxCreator: BoxUI, private screen: Screen) {
+  constructor(private io: SocketConnection, private boxCreator: BoxUI, private screen: Screen) {
     this.registerToServerEvents();
   }
 
@@ -85,7 +85,7 @@ export class RoomsPanel {
     const lines = [...sortedRooms.entries()].map(([roomId, users]) => {
       const line = `${roomId} — ${Object.keys(users).length} user(s)`;
       if (roomId === this.currentRoom) {
-        return `{white-bg}{black-fg}${line}{/black-fg}{/white-bg}`; // highlighted
+        return `{white-bg}{black-fg}${line}{/black-fg}{/white-bg}`;
       }
       return line
     }).join('\n');
