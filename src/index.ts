@@ -3,10 +3,13 @@ import { CommandBar } from './domain/components/commandBar';
 import { CommandHelpTextUI } from './domain/components/commandHelpText';
 import { CommandLogBox } from './domain/components/commandLog';
 import { RoomsPanel } from './domain/components/roomsPanel';
+import { UsersPanel } from './domain/components/usersPanel/usersPanel';
 import { Screen } from './domain/screen';
 import { User } from './domain/user/user';
 import { SocketConnection } from './infrastructure/socket';
 
+
+// ───── Prepare Logo ─────
 
 // ───── Create Screen ─────
 const screen = new Screen();
@@ -20,16 +23,7 @@ const chatBox = boxUi.createBox({
   width: '100%',
   height: '40%',
   label: 'Chat messages',
-  content: '',
-});
-
-const usersBox = boxUi.createBox({
-  top: '40%',
-  left: 0,
-  width: '50%',
-  height: '40%',
-  label: 'People in this room',
-  content: 'You are currently not connected to a room.',
+  tags: true,
 });
 
 
@@ -56,13 +50,14 @@ const user = new User(commandBar.events);
 const socket = new SocketConnection(commandBar.events, user);
 
 const roomsBox = new RoomsPanel(socket, boxUi, screen);
+const usersBox = new UsersPanel(socket, boxUi, screen);
 
 socket.initSocket(chatBox);
 
 // ───── Add Boxes to Screen ─────
 const components = [
   chatBox,
-  usersBox,
+  usersBox.build(),
   roomsBox.build(),
   commandLogBox.build(),
   commandHelpText.build(commands),

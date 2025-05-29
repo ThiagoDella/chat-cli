@@ -8,7 +8,7 @@ export class Screen {
   constructor() {
     this.screen = blessed.screen({
       smartCSR: true,
-      title: 'chat-cli',
+      title: 'TalkTerms',
       mouse: true,
       sendFocus: true,
     });
