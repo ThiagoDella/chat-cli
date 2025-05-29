@@ -27,6 +27,11 @@ export class RoomsPanel {
       this.currentRoom = payload.roomId;
       this.updateRoomUI();
     });
+
+    this.io.socket.on('updateRoomsList', (payload) => {
+      this.rooms.set(payload.roomId, payload.users);
+      this.updateRoomUI();
+    });
   }
 
   build() {
@@ -55,9 +60,9 @@ export class RoomsPanel {
       },
     });
 
+    // Doesn't work in every terminal, focus with tab/alt+tab is
+    // globally defined as fallback.
     this.ui.on('element click', () => {
-      console.log('click');
-
       this.ui?.focus();
     })
     this.ui.on('wheeldown', () => {

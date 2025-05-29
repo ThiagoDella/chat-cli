@@ -1,4 +1,4 @@
-# CHAT-CLI
+# TalkTerms
 
 **Note:** This is a work in progress
 
